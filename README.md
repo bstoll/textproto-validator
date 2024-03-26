@@ -1,5 +1,8 @@
 # textproto-validator
 
+[![test](https://github.com/bstoll/textproto-validator/actions/workflows/main.yml/badge.svg)](https://github.com/bstoll/textproto-validator/actions)
+[![Coverage Status](https://coveralls.io/repos/github/bstoll/textproto-validator/badge.svg)](https://coveralls.io/github/bstoll/textproto-validator)
+
 Textproto Validator is a tool to verify the [Text Format](https://protobuf.dev/reference/protobuf/textformat-spec/) of protobuf data.
 
 A file is expected to contain a `proto-message` and a `proto-file` comment near the top section of the file.  The validator will attempt to compile `proto-file` and parse the textproto into the `proto-message`.
