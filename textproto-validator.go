@@ -1,3 +1,4 @@
+// textproto-validator is a tool to verify the text format of protobuf data.
 package main
 
 import (
