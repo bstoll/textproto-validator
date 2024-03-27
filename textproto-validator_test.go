@@ -38,14 +38,21 @@ func TestValidateProto(t *testing.T) {
 			desc: "Valid textproto",
 			files: map[string][]byte{
 				"input.textproto": []byte("# proto-file: valid.proto\n# proto-message: Example\n\nname: \"example\""),
-				"valid.proto":     []byte("syntax = \"proto3\";\npackage example;\nmessage Example {\nstring name = 1;\n}"),
+				"valid.proto":     []byte("syntax = \"proto3\";\npackage foo.bar.baz;\nmessage Example {\nstring name = 1;\n}"),
+			},
+		},
+		{
+			desc: "Valid fully qualified proto-message name",
+			files: map[string][]byte{
+				"input.textproto": []byte("# proto-file: valid.proto\n# proto-message: foo.bar.baz.Example\n\nname: \"example\""),
+				"valid.proto":     []byte("syntax = \"proto3\";\npackage foo.bar.baz;\nmessage Example {\nstring name = 1;\n}"),
 			},
 		},
 		{
 			desc: "Syntax error in textproto",
 			files: map[string][]byte{
 				"input.textproto": []byte("# proto-file: valid.proto\n# proto-message: Example\n\nbadfield: \"example\""),
-				"valid.proto":     []byte("syntax = \"proto3\";\npackage example;\nmessage Example {\nstring name = 1;\n}"),
+				"valid.proto":     []byte("syntax = \"proto3\";\npackage foo.bar.baz;\nmessage Example {\nstring name = 1;\n}"),
 			},
 			wantErr: "unknown field: badfield",
 		},
@@ -53,7 +60,7 @@ func TestValidateProto(t *testing.T) {
 			desc: "Syntax error in proto-file",
 			files: map[string][]byte{
 				"input.textproto": []byte("# proto-file: valid.proto\n# proto-message: Example\n\n"),
-				"valid.proto":     []byte("syntax = \"proto3\";\npackage example;\nmessage Example {\nstring name = 1;\n}badtext"),
+				"valid.proto":     []byte("syntax = \"proto3\";\npackage foo.bar.baz;\nmessage Example {\nstring name = 1;\n}badtext"),
 			},
 			wantErr: "valid.proto:5:2: syntax error: unexpected identifier",
 		},
@@ -61,7 +68,7 @@ func TestValidateProto(t *testing.T) {
 			desc: "proto-message not in proto-file",
 			files: map[string][]byte{
 				"input.textproto": []byte("# proto-file: valid.proto\n# proto-message: Missing\n\n"),
-				"valid.proto":     []byte("syntax = \"proto3\";\npackage example;\nmessage Example {\nstring name = 1;\n}"),
+				"valid.proto":     []byte("syntax = \"proto3\";\npackage foo.bar.baz;\nmessage Example {\nstring name = 1;\n}"),
 			},
 			wantErr: "failed to find message Missing",
 		},

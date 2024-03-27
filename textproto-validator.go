@@ -96,16 +96,24 @@ func findMessage(reader fileReader, protoFile, protoMsg string) (protoreflect.Pr
 	if err != nil {
 		return nil, err
 	}
-	for _, fd := range fds {
-		pfd := fd.UnwrapFile()
-		protoMd := pfd.Messages().ByName(protoreflect.Name(protoMsg))
-		if protoMd == nil {
-			continue
-		}
-		return dynamicpb.NewMessage(protoMd), nil
+	pfd := fds[0].UnwrapFile()
+	if protoPath := protoMsgPkg(protoMsg); string(pfd.FullName()) == protoPath {
+		protoMsg = strings.TrimPrefix(protoMsg, protoPath+".")
 	}
+	protoMd := pfd.Messages().ByName(protoreflect.Name(protoMsg))
+	if protoMd == nil {
+		return nil, errors.New("message not found")
+	}
+	return dynamicpb.NewMessage(protoMd), nil
+}
 
-	return nil, errors.New("message not found")
+// protoMsgPkg returns all the characters before the last period in input.
+func protoMsgPkg(input string) string {
+	lastIndex := strings.LastIndex(input, ".")
+	if lastIndex > 0 {
+		return input[:lastIndex]
+	}
+	return ""
 }
 
 // extractHeaders returns the proto-file and proto-message values from input.
